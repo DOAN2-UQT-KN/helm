@@ -1,0 +1,63 @@
+# Global values shared across all services
+global:
+  environment: production
+
+# PostgreSQL for Auth Service
+postgresql-auth:
+  enabled: true
+  auth:
+    username: auth
+    password: changeme  # Change in production!
+    database: authdb
+  primary:
+    persistence:
+      size: 10Gi
+
+# PostgreSQL for User Service
+postgresql-user:
+  enabled: true
+  auth:
+    username: user
+    password: changeme  # Change in production!
+    database: userdb
+  primary:
+    persistence:
+      size: 10Gi
+
+# Enable/disable individual services
+auth-service:
+  enabled: true
+  image:
+    repository: your-dockerhub-username/auth-service
+    tag: latest
+  database:
+    host: "da2-umbrella-postgresql-auth"
+    port: "5432"
+    name: "authdb"
+    user: "auth"
+    password: "changeme"
+
+user-service:
+  enabled: true
+  image:
+    repository: your-dockerhub-username/user-service
+    tag: latest
+  database:
+    host: "da2-umbrella-postgresql-user"
+    port: "5432"
+    name: "userdb"
+    user: "user"
+    password: "changeme"
+
+api-gateway:
+  enabled: true
+  image:
+    repository: your-dockerhub-username/api-gateway
+    tag: latest
+  ingress:
+    enabled: true
+    hosts:
+      - host: api.yourdomain.com
+        paths:
+          - path: /
+            pathType: Prefix

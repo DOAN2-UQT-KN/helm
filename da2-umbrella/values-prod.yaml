@@ -1,0 +1,50 @@
+# Environment-specific values for production
+global:
+  environment: production
+
+auth-service:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: your-dockerhub-username/auth-service
+    tag: stable
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+
+user-service:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: your-dockerhub-username/user-service
+    tag: stable
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+
+api-gateway:
+  enabled: true
+  replicaCount: 5
+  image:
+    repository: your-dockerhub-username/api-gateway
+    tag: stable
+  autoscaling:
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 30
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/rate-limit: "200"
+    hosts:
+      - host: api.yourdomain.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-gateway-tls
+        hosts:
+          - api.yourdomain.com

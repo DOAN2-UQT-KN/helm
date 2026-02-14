@@ -1,0 +1,54 @@
+# Environment-specific values for development
+global:
+  environment: development
+
+auth-service:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: your-dockerhub-username/auth-service
+    tag: dev
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+user-service:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: your-dockerhub-username/user-service
+    tag: dev
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+api-gateway:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: your-dockerhub-username/api-gateway
+    tag: dev
+  autoscaling:
+    enabled: false
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 150m
+      memory: 192Mi
+  ingress:
+    enabled: true
+    hosts:
+      - host: api-dev.yourdomain.com
+        paths:
+          - path: /
+            pathType: Prefix
