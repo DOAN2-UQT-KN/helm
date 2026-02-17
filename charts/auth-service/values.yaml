@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: your-dockerhub-username/auth-service
+  repository: uqtri/auth-service
   pullPolicy: IfNotPresent
   tag: "latest"
 
