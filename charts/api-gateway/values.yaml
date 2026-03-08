@@ -36,10 +36,10 @@ service:
 
 ingress:
   enabled: true
-  className: "nginx"
+  className: "traefik"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rate-limit: "100"
+    traefik.ingress.kubernetes.io/rate-limit: "100"
   hosts:
     - host: api.ecolink.id.vn
       paths:
