@@ -1,5 +1,5 @@
 # Default values for identity-service
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: uqtri/identity-service
@@ -26,7 +26,7 @@ securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: false
 
 service:
@@ -55,8 +55,8 @@ resources:
 
 autoscaling:
   enabled: false
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
@@ -93,11 +93,11 @@ database:
   port: "5432"
   name: "identitydb"
   user: "identity"
-  password: "changeme"  # CHANGE THIS IN PRODUCTION!
+  password: "changeme" # CHANGE THIS IN PRODUCTION!
 
 # JWT configuration
 jwt:
-  secret: "your-super-secret-jwt-key-change-this-in-production"  # CHANGE THIS!
+  secret: "your-super-secret-jwt-key-change-this-in-production" # CHANGE THIS!
 
 # Liveness and readiness probes
 livenessProbe:
