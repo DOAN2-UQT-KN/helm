@@ -1,0 +1,6 @@
+apiVersion: v2
+name: identity-service
+description: Identity service (auth + user + RBAC) for DA2 application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

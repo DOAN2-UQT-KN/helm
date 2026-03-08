@@ -1,0 +1,119 @@
+# Default values for identity-service
+replicaCount: 2
+
+image:
+  repository: uqtri/identity-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: identity.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Environment variables
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: PORT
+    value: "3000"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: identity-service-db-secret
+        key: database-url
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: identity-service-db-secret
+        key: jwt-secret
+  - name: JWT_EXPIRES_IN
+    value: "30m"
+  - name: JWT_REFRESH_EXPIRES_IN
+    value: "30d"
+  - name: CORS_ORIGIN
+    value: "*"
+
+# Database configuration
+database:
+  host: "postgres-identity"
+  port: "5432"
+  name: "identitydb"
+  user: "identity"
+  password: "changeme"  # CHANGE THIS IN PRODUCTION!
+
+# JWT configuration
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"  # CHANGE THIS!
+
+# Liveness and readiness probes
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
