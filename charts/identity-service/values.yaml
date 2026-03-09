@@ -88,12 +88,14 @@ env:
     value: "*"
 
 # Database configuration
+# DATABASE_URL="postgresql://identity:identity@identity-postgres-postgresql:5432/identitydb?schema=public"
+
 database:
-  host: "postgres-identity"
+  host: "identity-postgres-postgresql"
   port: "5432"
   name: "identitydb"
   user: "identity"
-  password: "changeme" # CHANGE THIS IN PRODUCTION!
+  password: "identity" # CHANGE THIS IN PRODUCTION!
 
 # JWT configuration
 jwt:
