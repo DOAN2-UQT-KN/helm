@@ -1,0 +1,22 @@
+{{- if .Values.tcpIngress.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ include "postgres-postgis.fullname" . }}
+  labels:
+    {{- include "postgres-postgis.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    {{- toYaml .Values.tcpIngress.entryPoints | nindent 4 }}
+  routes:
+    - match: HostSNI(`{{ .Values.tcpIngress.hostSNI }}`)
+      services:
+        - name: {{ include "postgres-postgis.fullname" . }}
+          port: {{ .Values.service.port }}
+  {{- if .Values.tcpIngress.tls.enabled }}
+  tls:
+    {{- if .Values.tcpIngress.tls.passthrough }}
+    passthrough: true
+    {{- end }}
+  {{- end }}
+{{- end }}

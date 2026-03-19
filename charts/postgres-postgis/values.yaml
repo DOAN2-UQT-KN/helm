@@ -13,7 +13,7 @@ service:
   port: 5432
 
 ingress:
-  enabled: true
+  enabled: false
   className: traefik
   annotations: {}
   hosts:
@@ -22,6 +22,15 @@ ingress:
         - path: /
           pathType: Prefix
   tls: []
+
+tcpIngress:
+  enabled: true
+  entryPoints:
+    - postgresql
+  hostSNI: "*"
+  tls:
+    enabled: false
+    passthrough: false
 
 persistence:
   enabled: true
