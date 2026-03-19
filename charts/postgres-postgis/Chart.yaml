@@ -1,0 +1,6 @@
+apiVersion: v2
+name: postgres-postgis
+description: PostgreSQL with PostGIS extension for DA2 application
+type: application
+version: 0.1.0
+appVersion: "17-3.5"

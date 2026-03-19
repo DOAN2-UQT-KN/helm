@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "postgres-postgis.fullname" . }}-initdb
+  labels:
+    {{- include "postgres-postgis.labels" . | nindent 4 }}
+data:
+  init.sql: |
+{{- range $db := .Values.databases }}
+    SELECT 'CREATE DATABASE {{ $db }}'
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ $db }}')\gexec
+
+{{- end }}
+{{- range $db := .Values.databases }}
+    \connect {{ $db }}
+    CREATE EXTENSION IF NOT EXISTS postgis;
+
+{{- end }}
