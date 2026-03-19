@@ -88,10 +88,10 @@ env:
     value: "*"
 
 # Database configuration
-# DATABASE_URL="postgresql://postgres:password@postgres-postgis-postgresql:5432/identitydb?schema=public"
+# DATABASE_URL="postgresql://postgres:password@postgres-postgis:5432/identitydb?schema=public"
 
 database:
-  host: "postgres-postgis-postgresql"
+  host: "postgres-postgis"
   port: "5432"
   name: "identitydb"
   user: "postgres"
