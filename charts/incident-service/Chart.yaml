@@ -1,0 +1,6 @@
+apiVersion: v2
+name: incident-service
+description: Helm chart for Incident Service - handles reports, tasks, and volunteer management
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

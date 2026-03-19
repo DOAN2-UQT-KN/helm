@@ -1,0 +1,145 @@
+# Default values for incident-service
+replicaCount: 1
+
+image:
+  repository: uqtri/incident-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 3001
+  targetPort: 3001
+
+ingress:
+  enabled: false
+  className: "traefik"
+  annotations: {}
+  hosts:
+    - host: incident.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Environment variables
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: PORT
+    value: "3001"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: incident-service-db-secret
+        key: database-url
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: incident-service-db-secret
+        key: jwt-secret
+  - name: CORS_ORIGIN
+    value: "*"
+  - name: AWS_REGION
+    value: "us-east-1"
+  - name: SQS_REPORT_ANALYSIS_QUEUE_URL
+    value: "http://localstack:4566/000000000000/report-analysis-queue"
+  - name: AWS_SQS_ENDPOINT
+    value: "http://localstack:4566"
+  - name: AWS_ACCESS_KEY_ID
+    value: "test"
+  - name: AWS_SECRET_ACCESS_KEY
+    value: "test"
+  - name: AI_SERVICE_URL
+    value: "http://ai-service:3004"
+  - name: REWARD_SERVICE_URL
+    value: "http://reward-service:3005"
+  - name: NOTIFICATION_SERVICE_URL
+    value: "http://notification-service:3006"
+  - name: WORKER_SQS_WAIT_TIME_SECONDS
+    value: "20"
+  - name: WORKER_SQS_VISIBILITY_TIMEOUT_SECONDS
+    value: "120"
+  - name: WORKER_BATCH_SIZE
+    value: "5"
+  - name: WORKER_MAX_RECEIVE_COUNT
+    value: "5"
+  - name: WORKER_RETRY_BASE_SECONDS
+    value: "30"
+  - name: WORKER_MAX_RETRY_DELAY_SECONDS
+    value: "900"
+
+# Database configuration
+# DATABASE_URL="postgresql://postgres:password@postgres-postgis-postgresql:5432/incidentdb?schema=public"
+
+database:
+  host: "postgres-postgis-postgresql"
+  port: "5432"
+  name: "incidentdb"
+  user: "postgres"
+  password: "password" # CHANGE THIS IN PRODUCTION!
+
+# JWT configuration
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production" # CHANGE THIS!
+
+# Liveness and readiness probes
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3001
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3001
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
