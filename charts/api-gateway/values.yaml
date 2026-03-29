@@ -85,8 +85,13 @@ env:
     value: "production"
   - name: PORT
     value: "8080"
+  # Public URL for OpenAPI `servers` + Swagger "Try it out" (match ingress TLS host)
+  - name: GATEWAY_PUBLIC_URL
+    value: "https://api.ecolink.id.vn"
   - name: IDENTITY_SERVICE_URL
     value: "http://identity-service:3000"
+  - name: INCIDENT_SERVICE_URL
+    value: "http://incident-service:3001"
 
 livenessProbe:
   httpGet:

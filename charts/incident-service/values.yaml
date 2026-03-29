@@ -82,6 +82,8 @@ env:
         key: jwt-secret
   - name: CORS_ORIGIN
     value: "*"
+  - name: SWAGGER_SERVER_URL
+    value: "https://api.ecolink.id.vn"
   - name: AWS_REGION
     value: "us-east-1"
   - name: SQS_REPORT_ANALYSIS_QUEUE_URL

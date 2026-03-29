@@ -86,6 +86,9 @@ env:
     value: "30d"
   - name: CORS_ORIGIN
     value: "*"
+  # OpenAPI server URL if you open /openapi.json on this service directly
+  - name: SWAGGER_SERVER_URL
+    value: "https://api.ecolink.id.vn"
 
 # Database configuration
 # DATABASE_URL="postgresql://postgres:password@postgres-postgis:5432/identitydb?schema=public"
