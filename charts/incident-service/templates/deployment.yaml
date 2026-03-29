@@ -47,10 +47,14 @@ spec:
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-        {{- with .Values.env }}
         env:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
+          {{- toYaml .Values.env | nindent 12 }}
+          {{- if .Values.localstackHostReachability.enabled }}
+            - name: AWS_SQS_ENDPOINT
+              value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}"
+            - name: SQS_REPORT_ANALYSIS_QUEUE_URL
+              value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}/000000000000/{{ .Values.localstackHostReachability.queueName }}"
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

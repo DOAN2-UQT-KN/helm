@@ -64,6 +64,16 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# When LocalStack runs on your machine (docker compose) but incident-service runs in-cluster,
+# pods must use a host-reachable address — not the Docker Compose DNS name "localstack".
+# Examples: Minikube → host.minikube.internal | Docker Desktop K8s → host.docker.internal
+# Production (real AWS SQS): set enabled: false and add SQS_REPORT_ANALYSIS_QUEUE_URL (+ omit or unset endpoint) to env.
+localstackHostReachability:
+  enabled: true
+  host: host.minikube.internal
+  port: 4566
+  queueName: durable-background-job
+
 # Environment variables
 env:
   - name: NODE_ENV
@@ -86,10 +96,6 @@ env:
     value: "https://api.ecolink.id.vn"
   - name: AWS_REGION
     value: "us-east-1"
-  - name: SQS_REPORT_ANALYSIS_QUEUE_URL
-    value: "http://localstack:4566/000000000000/report-analysis-queue"
-  - name: AWS_SQS_ENDPOINT
-    value: "http://localstack:4566"
   - name: AWS_ACCESS_KEY_ID
     value: "test"
   - name: AWS_SECRET_ACCESS_KEY
