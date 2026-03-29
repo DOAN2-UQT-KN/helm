@@ -64,21 +64,17 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# When LocalStack runs on your machine (docker compose) but incident-service runs in-cluster,
-# pods must use a host-reachable address — not the Docker Compose DNS name "localstack".
-# Pick a host that resolves inside YOUR cluster (host.minikube.internal only exists on Minikube):
-#   Docker Desktop / Rancher Desktop → host.docker.internal
-#   Minikube → host.minikube.internal
-#   k3d (v5+) → host.k3d.internal
-#   k3s on Linux (no magic DNS) → set host to e.g. host-localstack and set hostAliasIp to an IP
-#   reachable from nodes (your LAN IP, or try 172.17.0.1 if LocalStack publishes via docker0).
-# Production (real AWS SQS): enabled: false and add SQS_REPORT_ANALYSIS_QUEUE_URL to env.
+# When LocalStack runs on the same machine as the Kubernetes node (e.g. docker compose on host).
+# hostNetwork: pod uses the node's network stack — localhost in URLs is the host (LocalStack on :4566).
+# ClusterFirstWithHostNet keeps resolving in-cluster names (postgres-*, ClusterIP services).
+# Production: hostNetwork false, enabled false, real SQS URLs in env; or hostNetwork false with host IP.
 localstackHostReachability:
   enabled: true
-  host: host.docker.internal
+  hostNetwork: true
+  host: localhost
   port: 4566
   queueName: durable-background-job
-  # e.g. "192.168.1.10" — adds pod hostAliases so `host` resolves (use when ENOTFOUND persists)
+  # hostAliases when hostNetwork false and `host` is a name that does not resolve in the pod
   hostAliasIp: ""
 
 # Environment variables
