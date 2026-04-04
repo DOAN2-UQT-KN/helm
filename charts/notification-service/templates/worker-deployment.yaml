@@ -1,0 +1,70 @@
+{{- if .Values.worker.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "notification-service.fullname" . }}-worker
+  labels:
+    {{- include "notification-service.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "notification-service.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        {{- include "notification-service.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "notification-service.serviceAccountName" . }}
+      {{- if .Values.localstackHostReachability.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      {{- if and .Values.localstackHostReachability.enabled .Values.localstackHostReachability.hostAliasIp }}
+      hostAliases:
+        - ip: {{ .Values.localstackHostReachability.hostAliasIp | quote }}
+          hostnames:
+            - {{ .Values.localstackHostReachability.host | quote }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}-worker
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["node", "dist/worker.js"]
+        resources:
+          {{- toYaml .Values.worker.resources | nindent 12 }}
+        env:
+          {{- toYaml .Values.env | nindent 12 }}
+          {{- if .Values.localstackHostReachability.enabled }}
+            - name: AWS_SQS_ENDPOINT
+              value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}"
+            - name: SQS_NOTIFICATION_QUEUE_URL
+              value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}/000000000000/{{ .Values.localstackHostReachability.queueName }}"
+          {{- else if .Values.sqsNotificationQueueUrl }}
+            - name: SQS_NOTIFICATION_QUEUE_URL
+              value: {{ .Values.sqsNotificationQueueUrl | quote }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

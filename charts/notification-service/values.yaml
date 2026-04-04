@@ -1,0 +1,177 @@
+replicaCount: 1
+
+image:
+  repository: uqtri/notification-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 3006
+  targetPort: 3006
+
+ingress:
+  enabled: false
+  className: "traefik"
+  annotations: {}
+  hosts:
+    - host: notification.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: PORT
+    value: "3006"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: database-url
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: jwt-secret
+  - name: INTERNAL_NOTIFICATION_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: internal-notification-api-key
+  - name: CORS_ORIGIN
+    value: "*"
+  - name: SWAGGER_SERVER_URL
+    value: "https://api.ecolink.id.vn"
+  - name: SMTP_HOST
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-host
+  - name: SMTP_PORT
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-port
+  - name: SMTP_SECURE
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-secure
+  - name: SMTP_USER
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-user
+  - name: SMTP_PASS
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-pass
+  - name: SMTP_FROM
+    valueFrom:
+      secretKeyRef:
+        name: notification-service-db-secret
+        key: smtp-from
+  - name: AWS_REGION
+    value: "us-east-1"
+  - name: AWS_ACCESS_KEY_ID
+    value: "test"
+  - name: AWS_SECRET_ACCESS_KEY
+    value: "test"
+
+database:
+  host: "postgres-postgis"
+  port: "5432"
+  name: "notificationdb"
+  user: "postgres"
+  password: "password"
+
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+
+internalNotificationApiKey: "change-me-internal-only"
+
+# When localstackHostReachability.enabled is false, set this to your real queue URL.
+sqsNotificationQueueUrl: ""
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3006
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3006
+  initialDelaySeconds: 45
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 6
+
+localstackHostReachability:
+  enabled: false
+  hostNetwork: false
+  host: localhost
+  port: 4566
+  queueName: notification-send
+  hostAliasIp: ""
+
+worker:
+  enabled: false
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
