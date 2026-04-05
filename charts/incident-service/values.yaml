@@ -64,18 +64,19 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# When LocalStack runs on the same machine as the Kubernetes node (e.g. docker compose on host).
-# hostNetwork: pod uses the node's network stack — localhost in URLs is the host (LocalStack on :4566).
-# ClusterFirstWithHostNet keeps resolving in-cluster names (postgres-*, ClusterIP services).
-# Production: hostNetwork false, enabled false, real SQS URLs in env; or hostNetwork false with host IP.
+# Default: in-cluster LocalStack Service (helm/charts/localstack, releaseName: localstack → http://localstack:4566).
+# For LocalStack on the host instead: enabled + hostNetwork true, host localhost, and clear awsSqsEndpoint / sqsReportAnalysisQueueUrl.
 localstackHostReachability:
-  enabled: true
-  hostNetwork: true
+  enabled: false
+  hostNetwork: false
   host: localhost
   port: 4566
   queueName: durable-background-job
-  # hostAliases when hostNetwork false and `host` is a name that does not resolve in the pod
   hostAliasIp: ""
+
+# Used when localstackHostReachability.enabled is false (real AWS or in-cluster LocalStack).
+awsSqsEndpoint: "http://localstack:4566"
+sqsReportAnalysisQueueUrl: "http://localstack:4566/000000000000/durable-background-job"
 
 # Environment variables
 env:

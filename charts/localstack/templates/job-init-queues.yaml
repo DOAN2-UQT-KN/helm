@@ -1,0 +1,56 @@
+{{- if .Values.initQueues.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "localstack.fullname" . }}-init-queues
+  labels:
+    {{- include "localstack.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.initQueues.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "localstack.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: init-queues
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: aws-cli
+          image: "{{ .Values.initQueues.image.repository }}:{{ .Values.initQueues.image.tag }}"
+          imagePullPolicy: {{ .Values.initQueues.image.pullPolicy }}
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "test"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "test"
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.initQueues.awsRegion | quote }}
+            - name: ENDPOINT
+              value: http://{{ include "localstack.fullname" . }}:{{ .Values.service.port }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              echo "Waiting for LocalStack at $ENDPOINT ..."
+              i=0
+              while [ "$i" -lt 60 ]; do
+                if aws sqs list-queues --endpoint-url="$ENDPOINT" --region "$AWS_DEFAULT_REGION" >/dev/null 2>&1; then
+                  break
+                fi
+                i=$((i + 1))
+                sleep 2
+              done
+              if ! aws sqs list-queues --endpoint-url="$ENDPOINT" --region "$AWS_DEFAULT_REGION" >/dev/null 2>&1; then
+                echo "LocalStack did not become ready in time"
+                exit 1
+              fi
+              {{- range .Values.initQueues.queueNames }}
+              echo "Creating queue {{ . }}"
+              aws sqs create-queue --queue-name "{{ . }}" --endpoint-url="$ENDPOINT" --region "$AWS_DEFAULT_REGION" || true
+              {{- end }}
+              echo "Done."
+{{- end }}

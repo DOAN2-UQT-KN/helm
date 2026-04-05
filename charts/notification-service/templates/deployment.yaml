@@ -65,6 +65,10 @@ spec:
             - name: SQS_NOTIFICATION_QUEUE_URL
               value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}/000000000000/{{ .Values.localstackHostReachability.queueName }}"
           {{- else if .Values.sqsNotificationQueueUrl }}
+            {{- if .Values.awsSqsEndpoint }}
+            - name: AWS_SQS_ENDPOINT
+              value: {{ .Values.awsSqsEndpoint | quote }}
+            {{- end }}
             - name: SQS_NOTIFICATION_QUEUE_URL
               value: {{ .Values.sqsNotificationQueueUrl | quote }}
           {{- end }}

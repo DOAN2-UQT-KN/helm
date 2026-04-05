@@ -136,8 +136,9 @@ jwt:
 
 internalNotificationApiKey: "change-me-internal-only"
 
-# When localstackHostReachability.enabled is false, set this to your real queue URL.
-sqsNotificationQueueUrl: ""
+# In-cluster LocalStack (releaseName: localstack) or real AWS queue URL.
+awsSqsEndpoint: "http://localstack:4566"
+sqsNotificationQueueUrl: "http://localstack:4566/000000000000/notification-send"
 
 livenessProbe:
   httpGet:
@@ -157,6 +158,7 @@ readinessProbe:
   timeoutSeconds: 3
   failureThreshold: 6
 
+# Default uses in-cluster LocalStack (awsSqsEndpoint + sqsNotificationQueueUrl). Enable this for host-based LocalStack + hostNetwork.
 localstackHostReachability:
   enabled: false
   hostNetwork: false

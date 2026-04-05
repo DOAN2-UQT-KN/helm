@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  repository: localstack/localstack
+  pullPolicy: IfNotPresent
+  tag: "3.8"
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Comma-separated list passed to LocalStack SERVICES=
+services: "sqs"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+  port: 4566
+  targetPort: 4566
+
+# Helm post-install/upgrade Job: create SQS queues (idempotent create).
+initQueues:
+  enabled: true
+  backoffLimit: 6
+  image:
+    repository: amazon/aws-cli
+    tag: "2.15.0"
+    pullPolicy: IfNotPresent
+  awsRegion: us-east-1
+  queueNames:
+    - durable-background-job
+    - notification-send
