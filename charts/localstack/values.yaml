@@ -36,3 +36,4 @@ initQueues:
   queueNames:
     - durable-background-job
     - notification-send
+    - green-point
