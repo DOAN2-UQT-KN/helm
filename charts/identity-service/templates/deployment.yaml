@@ -51,10 +51,15 @@ spec:
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-        {{- with .Values.env }}
         env:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
+          {{- with .Values.env }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: INTERNAL_IDENTITY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "identity-service.fullname" . }}-db-secret
+                key: internal-identity-api-key
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

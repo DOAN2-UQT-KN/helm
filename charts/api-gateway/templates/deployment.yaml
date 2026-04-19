@@ -47,10 +47,20 @@ spec:
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-        {{- with .Values.env }}
         env:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
+          {{- with .Values.env }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: GATEWAY_PUBLIC_URL
+            value: {{ .Values.external.publicGatewayUrl | quote }}
+          - name: CORS_ORIGIN
+            value: {{ .Values.corsOrigin | quote }}
+          - name: IDENTITY_SERVICE_URL
+            value: {{ .Values.internal.identityServiceUrl | quote }}
+          - name: INCIDENT_SERVICE_URL
+            value: {{ .Values.internal.incidentServiceUrl | quote }}
+          - name: REWARD_SERVICE_URL
+            value: {{ .Values.internal.rewardServiceUrl | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

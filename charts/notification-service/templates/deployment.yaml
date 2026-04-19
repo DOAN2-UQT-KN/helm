@@ -59,6 +59,13 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
         env:
           {{- toYaml .Values.env | nindent 12 }}
+            - name: IDENTITY_SERVICE_URL
+              value: {{ .Values.internal.identityServiceUrl | quote }}
+            - name: INTERNAL_IDENTITY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "notification-service.fullname" . }}-db-secret
+                  key: internal-identity-api-key
           {{- if .Values.localstackHostReachability.enabled }}
             - name: AWS_SQS_ENDPOINT
               value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}"

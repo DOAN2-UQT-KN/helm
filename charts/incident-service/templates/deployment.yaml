@@ -63,6 +63,24 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
         env:
           {{- toYaml .Values.env | nindent 12 }}
+            - name: FRONTEND_APP_URL
+              value: {{ .Values.external.frontendUrl | quote }}
+            - name: PUBLIC_INCIDENT_API_URL
+              value: {{ .Values.external.publicIncidentApiUrl | quote }}
+            - name: IDENTITY_SERVICE_URL
+              value: {{ .Values.internal.identityServiceUrl | quote }}
+            - name: NOTIFICATION_SERVICE_URL
+              value: {{ .Values.internal.notificationServiceUrl | quote }}
+            - name: INTERNAL_IDENTITY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "incident-service.fullname" . }}-db-secret
+                  key: internal-identity-api-key
+            - name: INTERNAL_NOTIFICATION_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "incident-service.fullname" . }}-db-secret
+                  key: internal-notification-api-key
           {{- if .Values.localstackHostReachability.enabled }}
             - name: AWS_SQS_ENDPOINT
               value: "http://{{ .Values.localstackHostReachability.host }}:{{ .Values.localstackHostReachability.port }}"

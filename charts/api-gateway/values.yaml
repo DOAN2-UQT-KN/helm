@@ -80,18 +80,24 @@ affinity:
                   - api-gateway
           topologyKey: kubernetes.io/hostname
 
+# publicGatewayUrl: OpenAPI `servers` + Swagger (match ingress).
+# corsOrigin: SPA origin for Access-Control-Allow-Origin. Use "*" for permissive CORS.
+external:
+  publicGatewayUrl: "https://api.ecolink.id.vn"
+corsOrigin: "https://ecolink.id.vn"
+
+# Upstream ClusterIP bases (no trailing slash). Internal identity routes use /internal/v1 on identity-service directly, not via the gateway.
+internal:
+  identityServiceUrl: "http://identity-service:3000"
+  incidentServiceUrl: "http://incident-service:3001"
+  rewardServiceUrl: "http://reward-service:3002"
+  identityInternalRoutePrefix: "/internal/v1"
+
 env:
   - name: NODE_ENV
     value: "production"
   - name: PORT
     value: "8080"
-  # Public URL for OpenAPI `servers` + Swagger "Try it out" (match ingress TLS host)
-  - name: GATEWAY_PUBLIC_URL
-    value: "https://api.ecolink.id.vn"
-  - name: IDENTITY_SERVICE_URL
-    value: "http://identity-service:3000"
-  - name: INCIDENT_SERVICE_URL
-    value: "http://incident-service:3001"
 
 livenessProbe:
   httpGet:

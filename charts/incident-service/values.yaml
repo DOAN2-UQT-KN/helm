@@ -64,6 +64,24 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# Browser-facing URLs (email verification links + redirects after contact-email confirm).
+# publicIncidentApiUrl is usually the API gateway public origin (same host the app calls).
+external:
+  frontendUrl: "https://ecolink.id.vn"
+  publicIncidentApiUrl: "https://api.ecolink.id.vn"
+
+# In-cluster HTTP bases for server-to-server calls (no trailing slash). Apps append paths such as
+# /internal/v1/... (identity) or /api/v1/notifications/jobs (notification).
+internal:
+  identityServiceUrl: "http://identity-service:3000"
+  notificationServiceUrl: "http://notification-service:3003"
+  # Documented default path prefix on identity-service for internal routes (hardcoded in TS clients).
+  identityInternalRoutePrefix: "/internal/v1"
+
+# Must match identity-service INTERNAL_IDENTITY_API_KEY and notification-service INTERNAL_NOTIFICATION_API_KEY.
+internalIdentityApiKey: "change-me-internal-only"
+internalNotificationApiKey: "change-me-internal-only"
+
 # Default: in-cluster LocalStack Service (helm/charts/localstack, releaseName: localstack → http://localstack:4566).
 # For LocalStack on the host instead: enabled + hostNetwork true, host localhost, and clear awsSqsEndpoint / sqsReportAnalysisQueueUrl.
 localstackHostReachability:
@@ -107,9 +125,7 @@ env:
   - name: AI_SERVICE_URL
     value: "http://ai-service:3004"
   - name: REWARD_SERVICE_URL
-    value: "http://reward-service:3005"
-  - name: NOTIFICATION_SERVICE_URL
-    value: "http://notification-service:3006"
+    value: "http://reward-service:3002"
   - name: WORKER_SQS_WAIT_TIME_SECONDS
     value: "20"
   - name: WORKER_SQS_VISIBILITY_TIMEOUT_SECONDS

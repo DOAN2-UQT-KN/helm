@@ -42,10 +42,12 @@ spec:
           {{- toYaml .Values.readinessProbe | nindent 12 }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-        {{- with .Values.env }}
         env:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
+          {{- with .Values.env }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: VITE_API_GATEWAY_URL
+            value: {{ .Values.external.publicApiGatewayUrl | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

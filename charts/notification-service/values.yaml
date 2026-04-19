@@ -30,8 +30,8 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 3006
-  targetPort: 3006
+  port: 3003
+  targetPort: 3003
 
 ingress:
   enabled: false
@@ -63,11 +63,14 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# Must match identity-service internalIdentityApiKey (GET /internal/v1/users/:id/email).
+internalIdentityApiKey: "change-me-internal-only"
+
 env:
   - name: NODE_ENV
     value: "production"
   - name: PORT
-    value: "3006"
+    value: "3003"
   - name: DATABASE_URL
     valueFrom:
       secretKeyRef:
@@ -136,6 +139,10 @@ jwt:
 
 internalNotificationApiKey: "change-me-internal-only"
 
+internal:
+  identityServiceUrl: "http://identity-service:3000"
+  identityInternalRoutePrefix: "/internal/v1"
+
 # In-cluster LocalStack (releaseName: localstack) or real AWS queue URL.
 awsSqsEndpoint: "http://localstack:4566"
 sqsNotificationQueueUrl: "http://localstack:4566/000000000000/notification-send"
@@ -143,7 +150,7 @@ sqsNotificationQueueUrl: "http://localstack:4566/000000000000/notification-send"
 livenessProbe:
   httpGet:
     path: /health
-    port: 3006
+    port: 3003
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
@@ -152,7 +159,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 3006
+    port: 3003
   initialDelaySeconds: 45
   periodSeconds: 5
   timeoutSeconds: 3

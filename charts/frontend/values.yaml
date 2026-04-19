@@ -62,13 +62,14 @@ tolerations: []
 
 affinity: {}
 
+# Public origin of the API gateway (Vite `import.meta.env.VITE_API_GATEWAY_URL`).
+external:
+  publicApiGatewayUrl: "https://api.ecolink.id.vn"
+
 # Environment variables
 env:
   - name: NODE_ENV
     value: "production"
-  # API Gateway URL - configure this based on your environment
-  # - name: VITE_API_GATEWAY_URL
-  #   value: "http://api-gateway:8080"
 
 # Liveness and readiness probes
 livenessProbe:

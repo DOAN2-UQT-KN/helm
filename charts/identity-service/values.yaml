@@ -64,6 +64,9 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# Shared with incident-service / notification-service (x-internal-api-key on /internal/v1/...).
+internalIdentityApiKey: "change-me-internal-only"
+
 # Environment variables
 env:
   - name: NODE_ENV
