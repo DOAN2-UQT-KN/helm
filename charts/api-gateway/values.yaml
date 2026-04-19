@@ -32,7 +32,7 @@ securityContext:
 service:
   type: ClusterIP
   port: 80
-  targetPort: 8080
+  targetPort: 8081
 
 ingress:
   enabled: true
@@ -97,12 +97,12 @@ env:
   - name: NODE_ENV
     value: "production"
   - name: PORT
-    value: "8080"
+    value: "8081"
 
 livenessProbe:
   httpGet:
     path: /health
-    port: 8080
+    port: 8081
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
@@ -111,7 +111,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /health
-    port: 8080
+    port: 8081
   initialDelaySeconds: 10
   periodSeconds: 5
   timeoutSeconds: 3
